@@ -49,10 +49,19 @@ class Vaga{
 
     // Inserir a Vaga no Banco
     $obDataBase = new DataBase('vagas');
-    echo "<pre>"; print_r($obDataBase); echo "</pre>"; exit;
+    // Vai ser a query builder, vai montar uma sql de insert e executar na tabela vagas
+    // O ID da vaga vai ser igual ao resultado do insert
+    // se o insert for sucesso vou exibir um id, se não cai numa exception
+    $this->id = $obDataBase->insert([
+                        'titulo'    => $this->titulo,
+                        'descricao' => $this->descricao,
+                        'ativo'     => $this->ativo,
+                        'data'      => $this->data
+                        ]);
+    // Debug na instância
+    //echo "<pre>"; print_r($this); echo "</pre>"; exit;
 
-    // Atribuir o ID da Vaga na Instância
-
+    return true;
     // Retornar Sucesso
 
   }

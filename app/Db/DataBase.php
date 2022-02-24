@@ -6,7 +6,6 @@
 namespace App\Db;
 
 // Definindo PDO como uma dependência da Classe
-
 use PDOException;
 use \PDO;
 
@@ -73,7 +72,6 @@ class DataBase{
     try{
       // Posso colocar outras config, por exemplo, a porta do banco.
       $this->connection = new PDO('mysql:host='.self::HOST.';dbname='.self::NAME,self::USER,self::PASS);
-
       // Sempre que houver algum erro na query ele vai travar o sistema
       // Connection agr é uma instância de PDO
       // setAttribute tem dois parâmetros
@@ -88,6 +86,64 @@ class DataBase{
       // Para que esse dado fique disponível apenas internamente
       die('ERROR: '.$e->getMessage());
     }
+
+  }
+  /**
+   * Método responsável por executar queries dentro do Banco de Dados
+   * @param string
+   * @param array
+   * @return PDOStatement
+   * 
+   */
+  // Se não tiver as binds, não preciso passar os params
+  // Os $params são os valores que vão substituir os $binds 
+  public function execute($query, $params = []){
+    try{
+      // Isso já executa a ação e deixa o banco certo
+      $statement = $this->connection->prepare($query);
+      $statement->execute($params);
+      // É do $statement que pegamos os dados que vem do banco para fazer um select
+      return $statement;
+    }catch(PDOException $e){
+      die('ERROR: '.$e->getMessage());
+    }
+  }
+
+  /**
+   * Método responsável por inserir dados no banco
+   * @param array $values [ field => value]
+   * @return integer ID inserido
+   */
+  public function insert($values){
+    // query comum
+    //$query = 'INSERT INTO vagas (titulo, descricao, ativo, data) VALUES ("teste", "teste2", "n", "2022-02-24 08:22:00")';
+
+    // Dados da Query
+    // Posso passar direto, mas para mais organização vou passar aqui em cima
+    $fields = array_keys($values);
+    // $fields ficou com as chaves e o $values com os valores
+    //echo "<pre>"; print_r($fields); echo "</pre>"; exit;
+    
+    // Pegamos um array vazio e passamos o número de posições X
+    // Se ele não tiver X posições cria novas posições com padrões específicos
+    // Preciso de um array com o mesmo número de posições do $fields e se não tiver
+    // quero que as posições novas sejam interrogações.
+    $binds = array_pad([], count($fields), '?');
+    //echo "<pre>"; print_r($binds); echo "</pre>"; exit;
+
+
+    // Monta a Query
+    // No momento da execução dessa query o PDO faz uma validação se os dados são seguros para inserir no banco
+    // tudo que for dinamico na query podemos passar assim:
+    // implode () concatena todos os dados dentro do array com um separador no caso a vírgula
+    $query = 'INSERT INTO '.$this->table.' ('.implode(',',$fields).') VALUES ('.implode(',',$binds).')';
+    //echo $query; exit;
+
+    // Executa o insert
+    $this->execute($query, array_values($values));
+
+    // Retorna o ID inserido
+    return $this->connection->lastInsertId();
 
   }
 }

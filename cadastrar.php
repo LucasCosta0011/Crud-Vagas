@@ -25,6 +25,11 @@
       // Classe instânciada
       //echo "<pre>"; print_r($obVaga); echo "</pre>"; exit;
 
+      header('location: index.php?status=success');
+      // sempre que tiver um alteração de cabeçalho dessa forma, coloca um exit no final
+      // para impedir a execução do restante da página
+      exit;
+
 
 
     }
