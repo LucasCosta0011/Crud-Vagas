@@ -4,6 +4,7 @@ namespace App\Entity;
 
 // Definindo a dependência
 use \App\Db\DataBase;
+use \PDO;
 
 class Vaga{
 
@@ -60,9 +61,57 @@ class Vaga{
                         ]);
     // Debug na instância
     //echo "<pre>"; print_r($this); echo "</pre>"; exit;
-
-    return true;
+    
     // Retornar Sucesso
+    return true;
+  }
+  /**
+   * Método responsável por atualizar a vaga no banco
+   * @return boolean
+   */
+  public function atualizar(){
+    return (new DataBase('vagas'))->update('id = '.$this->id, [
+                                                                'titulo' => $this->titulo,
+                                                                'descricao' => $this->descricao,
+                                                                'ativo' => $this->ativo,
+                                                                'data' => $this->data
+                                                              ]);
+  }
+  /**
+   * Método responsável por obter as vagas do banco de dados
+   * @param string $where 
+   * @param string $order
+   * @param string $limit
+   * @return array 
+   */
+  public static function getVagas($where = null, $order = null, $limit = null){
+    // Retorna uma instância de PDOStatement
+    return (new DataBase('vagas'))->select($where, $order, $limit)
+    // O PDOStatement tem um método fetchAll
+    // Todo o retorno vai ser transformado em um array
+    // Primeiro parâmetro o tipo de array retornado
+    // Segundo parâmetro o tipo de objeto
+    // no caso uma instância da própria classe
+                                  ->fetchAll(PDO::FETCH_CLASS, self::class);
 
+  }
+  /**
+   * Método responsável por buscar uma vaga com base em seu ID
+   * @param integer
+   * @return Vaga
+   */
+  public static function getVaga($id){
+    return (new DataBase('vagas'))->select('id = '.$id)
+    // O PDOStatement tem um método fetch
+    // todo o retorno é transformado em dado unitário
+    // Passamos a classe que queremos instânciar como parâmetro
+                                  ->fetchObject(self::class);
+  }
+  /**
+   * Método responsável por excluir a vaga do banco
+   * @return boolean
+   */
+  public function excluir(){
+    return (new DataBase('vagas'))->delete('id = '.$this->id);
   }
 }

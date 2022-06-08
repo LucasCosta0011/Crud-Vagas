@@ -1,26 +1,46 @@
 <?php
     // Para chamar as classes
     require __DIR__.'/vendor/autoload.php';
-    define('TITLE', 'Cadastrar vaga');
+    define('TITLE', 'Editar vaga');
     // echo "<pre>"; print_r($_POST); echo "</pre>";
 
     // Chamando a Classe
     use \App\Entity\Vaga;
-    // Criando uma nova Instância
-    $obVaga = new Vaga;
+
+    // Validação do ID
+    if(!isset($_GET['id']) or !is_numeric($_GET['id'])){
+      header('location: index.php?status=error');
+      exit;
+    }
+
+    // Consulta a Vaga
+    $obVaga = Vaga::getVaga($_GET['id']);
+    //echo "<pre>"; print_r($obVaga); echo "</pre>"; exit;
+
+    // Validação a Vaga
+    // Se $obVaga não for uma instância de Vaga
+    // Ou seja, se não existir vaga no ID passado
+    if(!$obVaga instanceof Vaga){
+      header('location: index.php?status=error');
+      exit;
+    }
 
     // Validação do POST
     if(isset($_POST['titulo'], $_POST['descricao'], $_POST['ativo'])){
       // Matar o código um teste para saber se está entrando na condição
       //die('cadastrar.php');
 
+      // Criando uma nova Instância
+      // Já temos uma instância fora da condição
+      //$obVaga = new Vaga;
       $obVaga->titulo = $_POST['titulo'];
       $obVaga->descricao = $_POST['descricao'];
 
       // É possível implementar se chegou o valor (s/n), aumentar o nível de segurança
       $obVaga->ativo = $_POST['ativo'];
-
-      $obVaga->cadastrar();
+      //echo "<pre>"; print_r($obVaga); echo "</pre>"; exit;
+      
+      $obVaga->atualizar();
 
       // Classe instânciada
       //echo "<pre>"; print_r($obVaga); echo "</pre>"; exit;

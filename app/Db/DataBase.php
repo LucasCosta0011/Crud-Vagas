@@ -146,6 +146,66 @@ class DataBase{
     return $this->connection->lastInsertId();
 
   }
+  /**
+   * Método responsável por executar uma consulta no banco
+   * @param string $where
+   * @param string $order
+   * @param string $limit
+   * @return PDOStatement
+   */
+  public function select($where = null, $order = null, $limit = null, $fields = '*'){
+    // DADOS DA QUERY
+    //Se tiver dados faz alguma coisa, se não faz outra
+    $where = strlen($where) ? 'WHERE '.$where : '';
+    $order = strlen($order) ? 'ORDER BY '.$order : '';
+    $limit = strlen($limit) ? 'LIMIT '.$limit : '';
+    $query = 'SELECT '.$fields.' FROM '.$this->table.' '.$where.' '.$order.' '.$limit.'';
+
+    //EXECUTA A QUERY
+    return $this->execute($query);
+  }
+  /**
+   * Método responsável por executar atualizações no banco de dados
+   * @param string $where
+   * @param array $values [ field => $value ]
+   * @return boolean
+   */
+  public function update($where, $values){
+    //DADOS DA QUERY
+    $fields = array_keys($values);
+
+    // Exemplo de UPDATE estático
+    //$query = "UPDATE vagas SET titulo="titulo", descricao="descricao", ativo="ativo", data="data" WHERE id = 1";
+
+    // MONTA A QUERY
+    // Exemplo de UPDATE Dinâmico
+    $query = 'UPDATE '.$this->table.' SET '.implode('=?,',$fields).'=? WHERE '.$where;
+    //echo $query;
+    //exit;
+
+    // EXECUTAR A A QUERY
+    $this->execute($query, array_values($values));
+
+    // RETORNA SUCESSO
+    return true;
+  }
+
+  /**
+   * Método responsável por excluir dados do banco
+   * @param string $where
+   * @return boolean
+   */
+  public function delete($where){
+    // MONTA A QUERY
+    $query = 'DELETE FROM '.$this->table.' WHERE '.$where;
+
+    // EXECUTA A QUERY
+    $this->execute($query);
+
+    // RETORNA SUCESSO
+    return true;
+  }
+  
 }
 
 ?>

@@ -8,18 +8,18 @@
 
   </section>
 
-  <h2 class="mt-3">Cadastrar vaga</h2>
+  <h2 class="mt-3"><?=TITLE?></h2>
 
   <form method="POST">
 
     <div class="form-group">
       <label for="titulo">Título</label>
-      <input type="text" class="form-control" name="titulo">
+      <input type="text" class="form-control" name="titulo" value="<?=$obVaga->titulo?>">
     </div>
 
     <div class="form-group">
       <label for="descricao">Descrição</label>
-      <textarea class="form-control" name="descricao" rows="5"></textarea>
+      <textarea class="form-control" name="descricao" rows="5"><?=$obVaga->descricao?></textarea>
     </div>
 
     <div class="form-group">
@@ -35,7 +35,8 @@
 
         <div class="form-check form-check-inline">
           <label class="form-control">
-            <input type="radio" name="ativo" value="n"> Inativo
+            <!--Só da um checked no inativo, se o ativo/status dele for 'n', se não, não faz nada-->
+            <input type="radio" name="ativo" value="n" <?=$obVaga->ativo == 'n' ? 'checked' : '' ?>> Inativo
           </label>
         </div>
 
